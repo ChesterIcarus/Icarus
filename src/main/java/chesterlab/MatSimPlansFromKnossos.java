@@ -37,10 +37,9 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.scenario.ScenarioUtils;
 
-public class MatSimPlansFromKnossos {
-    private static final String NETWORKFILE = "phx_mm_Net_test.xml";
-    private static final String PLANSFILESOUTPUT = "MatsimPlans.txt";
+import static org.matsim.api.core.v01.Id.createPersonId;
 
+public class MatSimPlansFromKnossos {
     private Scenario scenario;
     private Config config;
     JsonNode knossosPlans;
@@ -55,28 +54,28 @@ public class MatSimPlansFromKnossos {
         this.config = ConfigUtils.loadConfig(filename);
         this.config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
         this.config.plansCalcRoute().setInsertingAccessEgressWalk(true);
-
         this.scenario = ScenarioUtils.loadScenario(this.config);
     }
 
-    void ReadConfigFile(String filename) {
+    void CreateEmptyScenario(){
+        this.scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());
     }
 
     void ReadKnossosInput(String filename) throws IOException {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            this.knossosPlans = mapper.readTree(new File("MATsim_plan_format.json"));
+            this.knossosPlans = mapper.readTree(new File(filename));
         } catch (FileNotFoundException fileNotFound) {
         } catch (IOException ioException) {
         }
     }
 
     void CreateMatsimPlans(JsonNode planObject) {
-        for (JsonNode agent : planObject) {
-            Id<Person> person_id = Id.createPersonId(agent.get("person_id").asText());
-            Person person = this.scenario.getPopulation().getFactory().createPerson(person_id);
-            Plan plan = this.scenario.getPopulation().getFactory().createPlan();
-            for (JsonNode act : agent) {
+        for (JsonNode agent : planObject.get("population")) {
+            Id<Person> person_id = createPersonId(agent.get("person_id").asText());
+            Person person = scenario.getPopulation().getFactory().createPerson(person_id);
+            Plan plan = scenario.getPopulation().getFactory().createPlan();
+            for (JsonNode act : agent.get("plans")) {
                 switch (act.get("actType").asText()) {
                 case "ACTIVITY":
                     Coord coord = new Coord(act.get("x").asDouble(), act.get("y").asDouble());
@@ -85,18 +84,19 @@ public class MatSimPlansFromKnossos {
                     plan.addActivity(activity);
                 case "LEG":
                     String mode = act.get("mode").asText();
-                    Leg leg = this.scenario.getPopulation().getFactory().createLeg(mode);
+                    Leg leg = scenario.getPopulation().getFactory().createLeg(mode);
                     leg.setDepartureTime(act.get("depart_time_sec_dbl").asDouble());
                     leg.setTravelTime(act.get("travel_time_sec_dbl").asDouble());
                     plan.addLeg(leg);
                 }
-                person.addPlan(plan);
-                this.scenario.getPopulation().addPerson(person);
             }
+            person.addPlan(plan);
+            this.scenario.getPopulation().addPerson(person);
         }
     }
 
     void WritePlansToFile(String filename) {
         PopulationWriter pWriter = new PopulationWriter(this.scenario.getPopulation(), this.scenario.getNetwork());
+        pWriter.write(filename);
     }
 }
