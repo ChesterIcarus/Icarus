@@ -7,7 +7,7 @@
 	</module>
 
 	<module name="network">
-		<param name="inputNetworkFile" value="HeavyPhxMatsimNetwork.xml"/>
+		<param name="inputNetworkFile" value="PhxPureMatsimNetwork.xml"/>
 	</module>
 
 	<module name="plans">
@@ -28,7 +28,7 @@
 		<param name="endTime" value="30:00:00"/>
 		<param name="simStarttimeInterpretation" value="onlyUseStarttime"/>
 	    <param name="insertingWaitingVehiclesBeforeDrivingVehicles" value="true"/>
-		<param name = "snapshotperiod"	value = "00:00:00"/> <!-- 00:00:00 means NO snapshot writing -->
+		<param name = "snapshotperiod"	value = "00:01:00"/> <!-- 00:00:00 means NO snapshot writing -->
 		
 	</module>
 
@@ -42,37 +42,33 @@
 		<!-- </parameterset> -->
 			
 		<parameterset type="activityParams">
+            <param name="typicalDuration" value="08:00:00"/>
 			<param name="activityType" value="w"/>
-			<param name="typicalDuration" value="08:00:00"/>
-			<param name="openingTime" value="04:00:00"/>
-			<param name="latestStartTime" value="18:00:00"/>
-			<param name="closingTime" value="23:00:00"/>
 			<param name="priority" value="1.0"/>
 		</parameterset>
 
 		<parameterset type="activityParams">
+            <param name="typicalDuration" value="08:00:00"/>
 			<param name="activityType" value="h"/>
 			<param name="priority" value="1.0"/>
-			<param name="typicalDuration" value="12:00:00"/>
 		</parameterset>
 		
 		<parameterset type="activityParams">
+            <param name="typicalDuration" value="08:00:00"/>
 			<param name="activityType" value="s"/>
 			<param name="priority" value="1.0"/>
-			<param name="typicalDuration" value="04:00:00"/>
 		</parameterset>
 			
 		<parameterset type="modeParams" >
 			<param name="constant" value="-2.0" />
 			<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
 			<param name="mode" value="car" />
-			<param name="monetaryDistanceRate" value="-3.5E-4" />
 		</parameterset>
 
 		<parameterset type="modeParams" >
 			<param name="constant" value="-3.0" />
 			<param name="marginalUtilityOfTraveling_util_hr" value="0.0" />
-			<param name="mode" value="bicycle" />
+			<param name="mode" value="bike" />
 		</parameterset>
 
 		<parameterset type="modeParams" >
@@ -108,7 +104,7 @@
 	</module> -->
 	
 	<module name="changeMode">
-		<param name="modes" value="car, bicycle, walk"/>
+		<param name="modes" value="car, bike, walk"/>
 	</module>
 
 </config>

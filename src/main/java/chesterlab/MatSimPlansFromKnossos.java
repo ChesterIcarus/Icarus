@@ -1,10 +1,6 @@
 package chesterlab;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -81,13 +77,19 @@ public class MatSimPlansFromKnossos {
                     Coord coord = new Coord(act.get("x").asDouble(), act.get("y").asDouble());
                     String purpose = act.get("purpose").asText();
                     Activity activity = scenario.getPopulation().getFactory().createActivityFromCoord(purpose, coord);
+                    activity.setStartTime(act.get("start_time_sec_dbl").asDouble());
+                    activity.setEndTime(act.get("end_time_sec_dbl").asDouble());
                     plan.addActivity(activity);
+                    break;
                 case "LEG":
                     String mode = act.get("mode").asText();
                     Leg leg = scenario.getPopulation().getFactory().createLeg(mode);
                     leg.setDepartureTime(act.get("depart_time_sec_dbl").asDouble());
-                    leg.setTravelTime(act.get("travel_time_sec_dbl").asDouble());
+                    Double travelTime = act.get("travel_time_sec_dbl").asDouble();
+                    if (travelTime < 0.0) { travelTime = 0.0;}
+                    leg.setTravelTime(travelTime);
                     plan.addLeg(leg);
+                    break;
                 }
             }
             person.addPlan(plan);
