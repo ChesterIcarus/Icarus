@@ -2,6 +2,7 @@
 *.osm
 .idea/workspace.xml
 *.jpeg
+*.png
 *.txt
 Output/*
 Output/*/*
