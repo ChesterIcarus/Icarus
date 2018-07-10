@@ -3,6 +3,7 @@ package chesterlab;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.ControlerConfigGroup.RoutingAlgorithmType;
@@ -13,26 +14,40 @@ import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.network.NetworkUtils;
+import org.matsim.core.network.io.NetworkWriter;
+import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule.DefaultSelector;
 import org.matsim.core.replanning.strategies.DefaultPlanStrategiesModule.DefaultStrategy;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.core.utils.geometry.transformations.GeotoolsTransformation;
+
+import static org.matsim.core.network.NetworkUtils.createNetwork;
 
 public class MatsimRunPrep {
 
-    public MatsimRunPrep(){}
+    public MatsimRunPrep(){};
+
+    private Scenario scenario;
+    private Network network;
+    private Config config;
+    private Controler controler;
+    private String networkFile = "PhxPureMatsimNetwork.xml";
+    private String inputCrs = "EPSG:2223";
+    private String planInputFile = "FinalMatsimPlanOutput.xml";
+    private String configOutputFile = "MyNewConfig.xml";
 
     public Config createConfigFromFile(String filename){
-        Config config = ConfigUtils.loadConfig(filename);
+        config = ConfigUtils.loadConfig(filename);
 
         config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-        config.controler().setLastIteration(1000);
+        config.controler().setLastIteration(0);
 
-        config.network().setInputFile("PhxPureMatsimNetwork.xml");
-        config.network().setInputCRS("WGS84");
+        config.network().setInputFile(networkFile);
+        config.network().setInputCRS(inputCrs);
 
         config.plans().setRemovingUnneccessaryPlanAttributes(true);
-        config.plans().setInputFile("FinalMatsimPlanOutput.xml");
-        config.plans().setInputCRS("WGS84");
+        config.plans().setInputFile(planInputFile);
+        config.plans().setInputCRS(inputCrs);
 
         config.global().setNumberOfThreads(6);
         config.qsim().setNumberOfThreads(6);
@@ -40,7 +55,6 @@ public class MatsimRunPrep {
 
         config.controler().setRoutingAlgorithmType( RoutingAlgorithmType.FastDijkstra);
 
-//        config.plansCalcRoute().setInsertingAccessEgressWalk(true);
         config.scenario().setSimulationPeriodInDays(1);
 
         {
@@ -57,18 +71,23 @@ public class MatsimRunPrep {
         }
 
         config.qsim().setTrafficDynamics(TrafficDynamics.queue);
-        ConfigUtils.writeConfig(config, "MyNewConfig.xml");
+        ConfigUtils.writeConfig(config, configOutputFile);
 
         return config;
     }
 
     public Scenario createScenarioFromConfig(Config config){
-        final Scenario scenario = ScenarioUtils.loadScenario(config);
+        scenario = ScenarioUtils.loadScenario(config);
         return scenario;
     }
 
     public Controler createControlerFromScenario(Scenario scenario){
-        return (new Controler(scenario));
+        controler = new Controler(scenario);
+        return controler;
     }
 
+    public void transformNetwork(final String from_crs, final String to_crs){
+            NetworkWriter networkWriter = new NetworkWriter(new GeotoolsTransformation(from_crs, to_crs), scenario.getNetwork());
+            networkWriter.writeFileV2(networkFile);
+    }
 }

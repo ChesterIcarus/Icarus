@@ -17,6 +17,10 @@
         <id>matsim</id>
         <url>https://dl.bintray.com/matsim/matsim</url>
       </repository>
+      <repository>
+        <id>pt2matsim</id>
+        <url>http://dl.bintray.com/polettif/matsim</url>
+      </repository>
     </repositories>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,6 +45,11 @@
         <groupId>org.matsim</groupId>
         <artifactId>matsim</artifactId>
         <version>0.10.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.matsim</groupId>
+        <artifactId>pt2matsim</artifactId>
+        <version>18.5</version>
     </dependency>
   </dependencies>
 

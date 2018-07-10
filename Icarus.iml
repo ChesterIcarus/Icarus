@@ -45,5 +45,11 @@
     <orderEntry type="library" name="Maven: org.jvnet.ogc:kml-v_2_2_0:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.hisrc.w3c:atom-v_1_0:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.jvnet.jaxb2_commons:jaxb2-basics-runtime:0.9.4" level="project" />
+    <orderEntry type="library" name="Maven: org.matsim:pt2matsim:18.5" level="project" />
+    <orderEntry type="library" name="Maven: com.opencsv:opencsv:3.7" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.3.2" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
+    <orderEntry type="library" name="Maven: de.grundid.opendatalab:geojson-jackson:1.5" level="project" />
+    <orderEntry type="library" name="Maven: net.lingala.zip4j:zip4j:1.3.2" level="project" />
   </component>
 </module>
